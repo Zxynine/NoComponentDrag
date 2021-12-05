@@ -29,7 +29,8 @@
 
 import adsk.core, adsk.fusion, adsk.cam
 import sys, time
-import threading, traceback
+import threading
+from typing import List, Tuple
 # Avoid Fusion namespace pollution
 from . import error, utils
 
@@ -39,7 +40,7 @@ AUTO_HANDLER_CLASS = None
 class EventsManager:
 	def __init__(self, error_catcher=None):
 		#Declared in init to allow multiple commands to use a single lib
-		self.handlers = []
+		self.handlers: List[Tuple(type, adsk.core.CommandEvent)] = []
 		self.custom_event_names = []
 		self.app, self.ui = utils.AppObjects()
 

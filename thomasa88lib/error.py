@@ -7,7 +7,7 @@ import adsk.core
 import traceback, getpass
 import os, re, sys
 # Avoid Fusion namespace pollution
-from . import utils, manifest
+from . import utils
 
 class ErrorCatcher():
 	'''	Showing a messagebox is disabled in debugging, by default,

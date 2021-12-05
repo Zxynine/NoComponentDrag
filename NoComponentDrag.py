@@ -21,8 +21,6 @@ CMD_DESCRIPTION = 'Enables or disables the movement of components by dragging in
 TESTCMD = CMD_DESCRIPTION + '\n\n' + VERSION_INFO + '\n'
 
 
-select_panel_:adsk.core.ToolbarPanel = None
-
 ui_ = None
 app_:adsk.core.Application = None 
 error_catcher_ = error.ErrorCatcher()
@@ -79,10 +77,9 @@ def check_environment():
 	# during Fusion 360 start-up(?). Checking for app_.isStartupComplete does not help.
 	is_parametric = utils.is_parametric_mode()
 	if parametric_environment_ == is_parametric: return # Environment did not change
-	parametric_environment_ = is_parametric
 
 	# Hide/show our menu command to avoid showing to Component Drag menu items in direct edit mode (Our command + Fusion's command).
-	enable_ctrl_def_.isVisible = is_parametric
+	enable_ctrl_def_.isVisible = parametric_environment_ = is_parametric
 
 	# We only need to update checkbox in parametric mode, as it will not be seen in direct edit mode.
 	# Fusion crashes if we change isChecked from (one of?) the event handlers, so we put the update at the end of the event queue.
@@ -99,25 +96,29 @@ def update_checkbox():
 		enable_ctrl_def_.isChecked = direct_edit_drag_
 		addin_updating_checkbox_ = False
 
+
+def application_startup(args:adsk.core.ApplicationEventArgs):
+	#An additional check environment to make sure things get updated
+	events_manager_.delay(check_environment)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def run(context):
 	#Expose global variables inside of function
-	global app_, ui_, enable_ctrl_def_, select_panel_, fusion_drag_controls_def_, events_manager_
+	global app_, ui_, enable_ctrl_def_, select_panel_controls, fusion_drag_controls_def_, events_manager_
 	FUSION_DRAG_ID = 'FusionDragCompControlsCmd'
 	with error_catcher_:
 		app_, ui_ = utils.AppObjects()
 		fusion_drag_controls_def_ = ui_.commandDefinitions.itemById(FUSION_DRAG_ID).controlDefinition
 		# There are multiple select panels. Pick the right one
-		select_panel_ = ui_.toolbarPanelsByProductType('DesignProductType').itemById('SelectPanel')
+		select_panel_controls = ui_.toolbarPanelsByProductType('DesignProductType').itemById('SelectPanel').controls
 
 		# Clearing any previous enable_cmd_def  # Removing the old control
 		utils.clear_ui_items(ui_.commandDefinitions.itemById(ENABLE_CMD_ID),
-							select_panel_.controls.itemById(ENABLE_CMD_ID))
+							  select_panel_controls.itemById(ENABLE_CMD_ID))
 
 		# Use a Command to get a transaction when renaming
 		enable_cmd_def_ = ui_.commandDefinitions.addCheckBoxDefinition(ENABLE_CMD_ID, 'Component Drag', TESTCMD, get_drag_enabled())
-		select_panel_.controls.addCommand(enable_cmd_def_, FUSION_DRAG_ID, False) #Adding in the fresh control
+		select_panel_controls.addCommand(enable_cmd_def_, FUSION_DRAG_ID, False) #Adding in the fresh control
 		enable_ctrl_def_ = enable_cmd_def_.controlDefinition
 
 		#Adds all needed handlers to the event manager
@@ -125,6 +126,7 @@ def run(context):
 		events_manager_.add_handler(ui_.commandStarting, callback=command_starting_handler)
 		events_manager_.add_handler(ui_.commandTerminated, callback=command_terminated_handler)
 		events_manager_.add_handler(app_.documentActivated, callback=document_activated_handler)
+		# events_manager_.add_handler(app_.startupCompleted, callback=application_startup)
 
 		# Workspace is not ready when starting (?)
 		if app_.isStartupComplete: check_environment()
@@ -133,7 +135,7 @@ def run(context):
 
 def stop(context):
 	with error_catcher_:
-		events_manager_.clean_up(select_panel_.controls.itemById(ENABLE_CMD_ID))
+		events_manager_.clean_up(select_panel_controls.itemById(ENABLE_CMD_ID))
 
 
 
