@@ -27,7 +27,6 @@ error_catcher_ = error.ErrorCatcher()
 events_manager_ = events.EventsManager(error_catcher_)
 enable_ctrl_def_ : adsk.core.CheckBoxControlDefinition = None
 select_panel_controls : adsk.core.ToolbarControls = None
-app_startup_finished = False
 parametric_environment_ = True
 addin_updating_checkbox_ = False
 fusion_drag_controls_def_ : adsk.core.CheckBoxControlDefinition = None
@@ -72,9 +71,7 @@ def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	global app_startup_finished
 	handler = events_manager_.find_handler_by_event(ui_.workspaceActivated)
 	if handler is not None: events_manager_.remove_handler((handler, ui_.workspaceActivated))
-	if app_startup_finished is False:
-		app_startup_finished = True
-		check_environment()
+	check_environment()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Gets the value of Fusion's "Component Drag" checkbox
 def get_drag_enabled():
@@ -92,7 +89,6 @@ def check_environment():
 	if parametric_environment_ == is_parametric: return # Environment did not change
 	
 	# Hide/show our menu command to avoid showing to Component Drag menu items in direct edit mode (Our command + Fusion's command).
-	
 	enable_ctrl_def_.isVisible = parametric_environment_ = is_parametric
 
 	# We only need to update checkbox in parametric mode, as it will not be seen in direct edit mode.
@@ -139,14 +135,12 @@ def run(context):
 		events_manager_.add_handler(app_.documentActivated, callback=document_activated_handler)
 		
 		
+		# Workspace is not ready when starting (?)
 		if not bool(context['IsApplicationStartup']): check_environment()
+		# Create a workspace activated handler to wait untill it is ready.
 		else: events_manager_.add_handler(ui_.workspaceActivated, callback=workspace_activated_handler)
 
-		# Workspace is not ready when starting (?)
-		# if app_.isStartupComplete: check_environment()
-		# Put a check at the end of the event queue instead.
-		# events_manager_.delay(check_environment)
-
+		
 def stop(context):
 	with error_catcher_:
 		events_manager_.clean_up(select_panel_controls.itemById(ENABLE_CMD_ID))
