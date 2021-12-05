@@ -133,15 +133,15 @@ class EventsManager:
 
 	def clean_up(self, oldControl = None):
 		"""`oldControl` is an optional variable that, if/when provided, the function: \\
-		`utils.clear_ui_items(oldControl)` \\
-		is called, which attempts to remove the control after cleanup"""
+		`utils.clear_ui_items(oldControl)`  is called, which attempts to remove the control after cleanup"""
 		self.remove_all_handlers()
 		self.unregister_all_events()
 		if oldControl is not None: utils.clear_ui_items(oldControl)
 
 	def find_handler_by_event(self, findevent):
+		eventName = findevent.name
 		for handler, event in self.handlers:
-			if findevent.name == event.name: 
+			if eventName == event.name: 
 				return handler
 
 
