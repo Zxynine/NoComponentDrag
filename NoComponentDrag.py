@@ -43,9 +43,7 @@ def command_starting_handler(args: adsk.core.ApplicationCommandEventArgs):
 def command_terminated_handler(args: adsk.core.ApplicationCommandEventArgs):
 	# Detect if user toggles Direct Edit or enters/leaves a Base Feature
 	# Undo/Redo triggers the ActivateEnvironmentCommand instead.
-	# PLM360OpenAttachmentCommand, CurrentlyOpenDocumentsCommand are workarounds for DocumentActivated with Drawings bug.
-	# https://forums.autodesk.com/t5/fusion-360-api-and-scripts/api-bug-application-documentactivated-event-do-not-raise/m-p/9020750
-	if (args.commandId in ('ActivateEnvironmentCommand', 'PLM360OpenAttachmentCommand', 'CurrentlyOpenDocumentsCommand') or
+	if (args.commandId in ('ActivateEnvironmentCommand') or
 		(args.terminationReason == adsk.core.CommandTerminationReason.CompletedTerminationReason and
 		 args.commandId in ('Undo', 'Redo','ConvertToPMDesignCommand', 'ConvertToDMDesignCommand',
 							'BaseFeatureActivate', 'BaseFeatureStop', 'BaseFeatureCreationCommand'))):
@@ -130,7 +128,6 @@ def run(context):
 		events_manager_.add_handler(ui_.commandStarting, callback=command_starting_handler)
 		events_manager_.add_handler(ui_.commandTerminated, callback=command_terminated_handler)
 		events_manager_.add_handler(app_.documentActivated, callback=document_activated_handler)
-		
 		
 		# Workspace is not ready when starting (?)
 		if not bool(context['IsApplicationStartup']): check_environment()
