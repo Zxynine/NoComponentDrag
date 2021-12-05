@@ -27,6 +27,7 @@ error_catcher_ = error.ErrorCatcher()
 events_manager_ = events.EventsManager(error_catcher_)
 enable_ctrl_def_ : adsk.core.CheckBoxControlDefinition = None
 select_panel_controls : adsk.core.ToolbarControls = None
+app_startup_finished = False
 parametric_environment_ = True
 addin_updating_checkbox_ = False
 fusion_drag_controls_def_ : adsk.core.CheckBoxControlDefinition = None
@@ -66,11 +67,14 @@ def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	check_environment()
 
 # This will fire at the start of fusion but not until the workspace is ready which fixes the other problem
+#This event removes itself on its first call to prevent useles events being queued
 def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
+	global app_startup_finished
 	handler = events_manager_.find_handler_by_event(ui_.workspaceActivated)
 	if handler is not None: events_manager_.remove_handler((handler, ui_.workspaceActivated))
-	ui_.messageBox('Fire!')
-	check_environment()
+	if app_startup_finished is False:
+		app_startup_finished = True
+		check_environment()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Gets the value of Fusion's "Component Drag" checkbox
 def get_drag_enabled():
@@ -84,10 +88,11 @@ def check_environment():
 	# Checking workspace type in DocumentActivated handler fails since Fusion 360 v2.0.10032
 	# UserInterface.ActiveWorkspace throws when it is called from DocumentActivatedHandler
 	# during Fusion 360 start-up(?). Checking for app_.isStartupComplete does not help.
-	is_parametric = utils.is_parametric_mode()
+	is_parametric = bool(utils.is_parametric_mode())
 	if parametric_environment_ == is_parametric: return # Environment did not change
-
+	
 	# Hide/show our menu command to avoid showing to Component Drag menu items in direct edit mode (Our command + Fusion's command).
+	
 	enable_ctrl_def_.isVisible = parametric_environment_ = is_parametric
 
 	# We only need to update checkbox in parametric mode, as it will not be seen in direct edit mode.
@@ -132,12 +137,15 @@ def run(context):
 		events_manager_.add_handler(ui_.commandStarting, callback=command_starting_handler)
 		events_manager_.add_handler(ui_.commandTerminated, callback=command_terminated_handler)
 		events_manager_.add_handler(app_.documentActivated, callback=document_activated_handler)
-		events_manager_.add_handler(ui_.workspaceActivated, callback=workspace_activated_handler)
+		
+		
+		if not bool(context['IsApplicationStartup']): check_environment()
+		else: events_manager_.add_handler(ui_.workspaceActivated, callback=workspace_activated_handler)
 
 		# Workspace is not ready when starting (?)
-		if app_.isStartupComplete: check_environment()
+		# if app_.isStartupComplete: check_environment()
 		# Put a check at the end of the event queue instead.
-		events_manager_.delay(check_environment)
+		# events_manager_.delay(check_environment)
 
 def stop(context):
 	with error_catcher_:

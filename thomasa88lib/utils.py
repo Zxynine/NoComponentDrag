@@ -101,7 +101,7 @@ def is_parametric_mode():
 		app_, ui_ = AppObjects()
 		if ui_.activeWorkspace.id == 'FusionSolidEnvironment':
 			design = adsk.fusion.Design.cast(app_.activeProduct)
-			return (design and design.designType == adsk.fusion.DesignTypes.ParametricDesignType)
+			return bool(design and design.designType == adsk.fusion.DesignTypes.ParametricDesignType)
 	except: return False
 
 def AppObjects(): return GetApp(),GetUi()
