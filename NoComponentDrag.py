@@ -23,8 +23,8 @@ app_ = ui_ = None
 error_catcher_ = error.ErrorCatcher()
 events_manager_ = events.EventsManager(error_catcher_)
 
-select_panel_ = None
-enable_cmd_def_ = None
+select_panel_:adsk.core.ToolbarPanel = None
+enable_cmd_def_:adsk.core.CommandDefinition = None
 parametric_environment_ = True
 addin_updating_checkbox_ = False
 fusion_drag_controls_cmd_def_ = None

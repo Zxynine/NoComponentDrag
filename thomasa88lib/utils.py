@@ -63,7 +63,7 @@ def get_fusion_ui_resource_folder():
     '''
     global _resFolder
     if not _resFolder:
-        app = adsk.core.Application.get()
+        app:adsk.core.Application = adsk.core.Application.get()
         _resFolder = app.userInterface.workspaces.itemById('FusionSolidEnvironment').resourceFolder.replace('/Environment/Model', '')
     return _resFolder
 
@@ -98,8 +98,8 @@ def clear_ui_items(*items):
 		if item: item.deleteMe()
 
 def AppObjects():
-	_app = adsk.core.Application.get()
-	_ui = _app.userInterface
+	_app:adsk.core.Application = adsk.core.Application.get()
+	_ui:adsk.core.UserInterface = _app.userInterface
 	return _app,_ui
 
 def is_parametric_mode():

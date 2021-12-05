@@ -51,7 +51,7 @@ class EventsManager:
 	
 	#Assigning
 	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	def add_handler(self, event, base_class=AUTO_HANDLER_CLASS, callback=None):
+	def add_handler(self, event:adsk.core.CommandEvent, base_class=AUTO_HANDLER_CLASS, callback=None):
 		"""`AUTO_HANDLER_CLASS` results in:
 		  1: Getting the classType
 		  2: Adding 'Handler' to the end
@@ -59,7 +59,7 @@ class EventsManager:
 		  4: Getting the module using the first segment
 		  5: sets baseClass to the return of getattr using the base and all subsequent segments (should be 1)"""
 		if base_class == AUTO_HANDLER_CLASS:
-			handler_classType_name = event.classType() + 'Handler'
+			handler_classType_name :str = event.classType() + 'Handler'
 			handler_class_parts = handler_classType_name.split('::')
 			base_class = sys.modules[handler_class_parts[0]]
 			for cls in handler_class_parts[1:]: base_class = getattr(base_class, cls)
@@ -67,19 +67,18 @@ class EventsManager:
 		handler_name = base_class.__name__ + '_' + callback.__name__
 		handler_class = type(handler_name, (base_class,), {"notify": error._error_catcher_wrapper(self, callback)})
 		handler_class.__init__ = lambda self: super(handler_class, self).__init__()
-		
 		handler = handler_class()
-		handler_info = (handler, event)
-
 		result = event.add(handler)
 		if not result: raise Exception('Failed to add handler ' + callback.__name__)
+
+
+		handler_info = (handler, event)
 		self.handlers.append(handler_info)# Avoid garbage collection
 		return handler_info
 	
 	def register_event(self, name):
-		# Unregisters to make sure there is not an old event registered due to a bad stop
+		# Clears and then starts the event (makes sure there is not an old event registered due to a bad stop)
 		self.app.unregisterCustomEvent(name)
-		# Registers new event
 		event = self.app.registerCustomEvent(name)
 		if event: self.custom_event_names.append(name)
 		return event
@@ -135,7 +134,7 @@ class EventsManager:
 		is called, which attempts to remove the control after cleanup"""
 		self.remove_all_handlers()
 		self.unregister_all_events()
-		if oldControl != None: utils.clear_ui_items(oldControl)
+		if oldControl is not None: utils.clear_ui_items(oldControl)
 
 
 
