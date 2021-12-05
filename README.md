@@ -54,6 +54,9 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
 
 ## Changelog
 
+* v 1.0.3
+  * Complete code rework by ZXYNINE
+  * Removal of old features that are no longer needed.
 * v 1.0.2
   * Fix for "Insert -> Derive" missing the insert panel. Issue #1. Credits to [ZXYNINE](https://github.com/Zxynine) for locating the bug and providing an initial fix.
   * Optimized synchronization of Direct Edit and Parametric mode drag options.

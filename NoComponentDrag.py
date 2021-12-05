@@ -1,9 +1,31 @@
 #Author-Thomas Axelsson, ZXYNINE
 #Description-Blocks Component Dragging in parametric mode
+#
+# Copyright (c) 2021 Thomas Axelsson, ZXYNINE
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 # This file is part of NoComponentDrag, a Fusion 360 add-in for blocking
 # component dragging.
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import adsk.core, adsk.fusion, adsk.cam
 import os
 
@@ -57,11 +79,9 @@ def enable_cmd_created_handler(args: adsk.core.CommandCreatedEventArgs):
 	set_drag_enabled(checkbox_def.isChecked)
 
 
-# Fusion bug: DocumentActivated is not called when switching to/from Drawing.
-# https://forums.autodesk.com/t5/fusion-360-api-and-scripts/api-bug-application-documentactivated-event-do-not-raise/m-p/9020750
+
 def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	check_environment()
-
 # This will fire at the start of fusion but not until the workspace is ready which fixes the other problem
 #This event removes itself on its first call to prevent useles events being queued
 def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
@@ -69,11 +89,11 @@ def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	if handler is not None: events_manager_.remove_handler((handler, ui_.workspaceActivated))
 	check_environment()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # Gets the value of Fusion's "Component Drag" checkbox
-def get_drag_enabled():
-	'''Sets the Fusion's "Component Drag" checkbox to the given value'''
-	return fusion_drag_controls_def_.isChecked	
-def set_drag_enabled(value): fusion_drag_controls_def_.isChecked = value	# '''Sets the Fusion's "Component Drag" checkbox to the given value'''
+def get_drag_enabled(): return fusion_drag_controls_def_.isChecked	
+#Sets the Fusion's "Component Drag" checkbox to the given value
+def set_drag_enabled(value:bool): fusion_drag_controls_def_.isChecked = value
 
 
 def check_environment():
@@ -83,7 +103,6 @@ def check_environment():
 	# during Fusion 360 start-up(?). Checking for app_.isStartupComplete does not help.
 	is_parametric = bool(utils.is_parametric_mode())
 	if parametric_environment_ == is_parametric: return # Environment did not change
-	
 	# Hide/show our menu command to avoid showing to Component Drag menu items in direct edit mode (Our command + Fusion's command).
 	enable_ctrl_def_.isVisible = parametric_environment_ = is_parametric
 
@@ -140,6 +159,7 @@ def stop(context):
 		events_manager_.clean_up(select_panel_controls.itemById(ENABLE_CMD_ID))
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -152,32 +172,6 @@ def stop(context):
 
 
 
-
-#Author-Thomas Axelsson, ZXYNINE
-#Description-Blocks Component Dragging in parametric mode
-
-# This file is part of NoComponentDrag, a Fusion 360 add-in for blocking
-# component drags.
-#
-# Copyright (c) 2020 Thomas Axelsson
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
 
 # import adsk.core, adsk.fusion, adsk.cam, traceback
 # import math, os, operator, time
