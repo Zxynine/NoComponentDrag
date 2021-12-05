@@ -4,9 +4,8 @@
 # This file is part of NoComponentDrag, a Fusion 360 add-in for blocking
 # component dragging.
 
-import adsk.core, adsk.fusion, adsk.cam, traceback
-import math, os, operator, time
-from collections import deque
+import adsk.core, adsk.fusion, adsk.cam
+import os
 
 # Import relative path to avoid namespace pollution
 from .thomasa88lib import utils, events, manifest, error
@@ -68,7 +67,6 @@ def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
 # This will fire at the start of fusion but not until the workspace is ready which fixes the other problem
 #This event removes itself on its first call to prevent useles events being queued
 def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
-	global app_startup_finished
 	handler = events_manager_.find_handler_by_event(ui_.workspaceActivated)
 	if handler is not None: events_manager_.remove_handler((handler, ui_.workspaceActivated))
 	check_environment()
@@ -120,8 +118,7 @@ def run(context):
 		select_panel_controls = ui_.toolbarPanelsByProductType('DesignProductType').itemById('SelectPanel').controls
 
 		# Clearing any previous enable_cmd_def  # Removing the old control
-		utils.clear_ui_items(ui_.commandDefinitions.itemById(ENABLE_CMD_ID),
-							  select_panel_controls.itemById(ENABLE_CMD_ID))
+		utils.clear_ui_items(ui_.commandDefinitions.itemById(ENABLE_CMD_ID), select_panel_controls.itemById(ENABLE_CMD_ID))
 
 		# Use a Command to get a transaction when renaming
 		enable_cmd_def_ = ui_.commandDefinitions.addCheckBoxDefinition(ENABLE_CMD_ID, 'Component Drag', TESTCMD, get_drag_enabled())
@@ -140,7 +137,7 @@ def run(context):
 		# Create a workspace activated handler to wait untill it is ready.
 		else: events_manager_.add_handler(ui_.workspaceActivated, callback=workspace_activated_handler)
 
-		
+
 def stop(context):
 	with error_catcher_:
 		events_manager_.clean_up(select_panel_controls.itemById(ENABLE_CMD_ID))
