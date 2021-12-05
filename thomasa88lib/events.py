@@ -122,7 +122,8 @@ class EventsManager:
 
 	def remove_all_handlers(self):
 		for handler, event in self.handlers:
-			event.remove(handler)
+			try:event.remove(handler)
+			except:pass
 		self.handlers.clear()
 
 	def unregister_all_events(self):
