@@ -29,14 +29,13 @@ import inspect
 import os, re
 import importlib
 
-def short_class(obj):
+def short_class(obj:adsk.core.Base):
     '''Returns shortened name of Object class'''
     return obj.classType().split('::')[-1]
 
 _DEPLOY_FOLDER_PATTERN = re.compile(r'.*/webdeploy/production/[^/]+')
 def get_fusion_deploy_folder():
-    '''
-    Get the Fusion 360 deploy folder.
+    ''' Get the Fusion 360 deploy folder.
 
     Typically:
      * Windows: C:/Users/<user>/AppData/Local/Autodesk/webdeploy/production/<hash>
@@ -45,11 +44,9 @@ def get_fusion_deploy_folder():
     NOTE! The structure within the deploy folder is not the same on Windows and Mac!
     E.g. see the examples for get_fusion_ui_resource_folder().
     '''
-
     # Strip the suffix from the UI resource folder, i.e.:
     # Windows: /Fusion/UI/FusionUI/Resources
     # Mac: /Autodesk Fusion 360.app/Contents/Libraries/Applications/Fusion/Fusion/UI/FusionUI/Resources
-
     return _DEPLOY_FOLDER_PATTERN.match(get_fusion_ui_resource_folder()).group(0)
 
 _resFolder = None
@@ -63,8 +60,7 @@ def get_fusion_ui_resource_folder():
     '''
     global _resFolder
     if not _resFolder:
-        app:adsk.core.Application = adsk.core.Application.get()
-        _resFolder = app.userInterface.workspaces.itemById('FusionSolidEnvironment').resourceFolder.replace('/Environment/Model', '')
+        _resFolder = GetApp().userInterface.workspaces.itemById('FusionSolidEnvironment').resourceFolder.replace('/Environment/Model', '')
     return _resFolder
 
 def get_caller_path():
@@ -90,25 +86,24 @@ def get_file_dir():
 
 # Allows for re-import of multiple modules
 def ReImport_List(*args):
-	for module in args:
-		importlib.reload(module)
+	for module in args: importlib.reload(module)
 
 def clear_ui_items(*items):
-	for item in items:
-		if item: item.deleteMe()
+	"""Attempts to call 'deleteMe()' on every item provided. Returns True if all deletions are a success"""
+	return all([item.deleteMe() for item in items])
 
-def AppObjects():
-	_app:adsk.core.Application = adsk.core.Application.get()
-	_ui:adsk.core.UserInterface = _app.userInterface
-	return _app,_ui
 
 def is_parametric_mode():
 	# Checking workspace type in DocumentActivated handler fails since Fusion 360 v2.0.10032
 	# UserInterface.ActiveWorkspace throws when it is called from DocumentActivatedHandler
 	# during Fusion 360 start-up(?). Checking for app_.isStartupComplete does not help.
-	app_, ui_ = AppObjects()
 	try:
+		app_, ui_ = AppObjects()
 		if ui_.activeWorkspace.id == 'FusionSolidEnvironment':
 			design = adsk.fusion.Design.cast(app_.activeProduct)
 			return (design and design.designType == adsk.fusion.DesignTypes.ParametricDesignType)
 	except: return False
+
+def AppObjects(): return GetApp(),GetUi()
+def GetApp(): return adsk.core.Application.cast(adsk.core.Application.get())
+def GetUi(): return GetApp().userInterface

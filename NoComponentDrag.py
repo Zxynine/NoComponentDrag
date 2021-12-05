@@ -98,8 +98,9 @@ def update_checkbox():
 
 
 def application_startup(args:adsk.core.ApplicationEventArgs):
-	#An additional check environment to make sure things get updated
-	events_manager_.delay(check_environment)
+	with error_catcher_:
+		#An additional check environment to make sure things get updated
+		events_manager_.delay(check_environment)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def run(context):
@@ -126,7 +127,7 @@ def run(context):
 		events_manager_.add_handler(ui_.commandStarting, callback=command_starting_handler)
 		events_manager_.add_handler(ui_.commandTerminated, callback=command_terminated_handler)
 		events_manager_.add_handler(app_.documentActivated, callback=document_activated_handler)
-		# events_manager_.add_handler(app_.startupCompleted, callback=application_startup)
+		events_manager_.add_handler(app_.startupCompleted, callback=application_startup)
 
 		# Workspace is not ready when starting (?)
 		if app_.isStartupComplete: check_environment()
