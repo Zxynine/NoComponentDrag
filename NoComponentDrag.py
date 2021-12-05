@@ -21,7 +21,7 @@ CMD_DESCRIPTION = 'Enables or disables the movement of components by dragging in
 TESTCMD = CMD_DESCRIPTION + '\n\n' + VERSION_INFO + '\n'
 
 
-ui_ = None
+ui_:adsk.core.UserInterface = None
 app_:adsk.core.Application = None 
 error_catcher_ = error.ErrorCatcher()
 events_manager_ = events.EventsManager(error_catcher_)
@@ -39,10 +39,7 @@ def command_starting_handler(args: adsk.core.ApplicationCommandEventArgs):
 	if parametric_environment_ and args.commandId == 'FusionDragComponentsCommand' and not get_drag_enabled():
 		args.isCanceled = True
 
-# Fusion bug: DocumentActivated is not called when switching to/from Drawing.
-# https://forums.autodesk.com/t5/fusion-360-api-and-scripts/api-bug-application-documentactivated-event-do-not-raise/m-p/9020750
-def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
-	check_environment()
+
 
 def command_terminated_handler(args: adsk.core.ApplicationCommandEventArgs):
 	# Detect if user toggles Direct Edit or enters/leaves a Base Feature
@@ -62,6 +59,18 @@ def enable_cmd_created_handler(args: adsk.core.CommandCreatedEventArgs):
 	checkbox_def: adsk.core.CheckBoxControlDefinition = args.command.parentCommandDefinition.controlDefinition
 	set_drag_enabled(checkbox_def.isChecked)
 
+
+# Fusion bug: DocumentActivated is not called when switching to/from Drawing.
+# https://forums.autodesk.com/t5/fusion-360-api-and-scripts/api-bug-application-documentactivated-event-do-not-raise/m-p/9020750
+def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
+	check_environment()
+
+# This will fire at the start of fusion but not until the workspace is ready which fixes the other problem
+def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
+	handler = events_manager_.find_handler_by_event(ui_.workspaceActivated)
+	if handler is not None: events_manager_.remove_handler((handler, ui_.workspaceActivated))
+	ui_.messageBox('Fire!')
+	check_environment()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Gets the value of Fusion's "Component Drag" checkbox
 def get_drag_enabled():
@@ -97,10 +106,6 @@ def update_checkbox():
 		addin_updating_checkbox_ = False
 
 
-def application_startup(args:adsk.core.ApplicationEventArgs):
-	with error_catcher_:
-		#An additional check environment to make sure things get updated
-		events_manager_.delay(check_environment)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def run(context):
@@ -127,7 +132,7 @@ def run(context):
 		events_manager_.add_handler(ui_.commandStarting, callback=command_starting_handler)
 		events_manager_.add_handler(ui_.commandTerminated, callback=command_terminated_handler)
 		events_manager_.add_handler(app_.documentActivated, callback=document_activated_handler)
-		events_manager_.add_handler(app_.startupCompleted, callback=application_startup)
+		events_manager_.add_handler(ui_.workspaceActivated, callback=workspace_activated_handler)
 
 		# Workspace is not ready when starting (?)
 		if app_.isStartupComplete: check_environment()

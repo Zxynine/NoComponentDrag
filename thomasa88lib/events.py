@@ -111,6 +111,7 @@ class EventsManager:
 		func = self.delayed_funcs.pop(delay_id, None)
 		func()
 
+
 	#Removing
 	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	def remove_handler(self, handler_info):
@@ -137,7 +138,10 @@ class EventsManager:
 		self.unregister_all_events()
 		if oldControl is not None: utils.clear_ui_items(oldControl)
 
-
+	def find_handler_by_event(self, findevent):
+		for handler, event in self.handlers:
+			if findevent.name == event.name: 
+				return handler
 
 
 
