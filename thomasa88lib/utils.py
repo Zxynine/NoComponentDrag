@@ -90,7 +90,7 @@ def ReImport_List(*args):
 
 def clear_ui_items(*items):
 	"""Attempts to call 'deleteMe()' on every item provided. Returns True if all deletions are a success"""
-	return all([item.deleteMe() for item in items])
+	return all([item.deleteMe() for item in items if item is not None])
 
 
 def is_parametric_mode():
