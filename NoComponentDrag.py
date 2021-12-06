@@ -39,7 +39,7 @@ FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 ENABLE_CMD_ID = 'thomasa88_NoComponentDrag_Enable'
 VERSION_INFO = f'({NAME} v {VERSION})'
 CMD_DESCRIPTION = 'Enables or disables the movement of components by dragging in the canvas.'
-TESTCMD = CMD_DESCRIPTION + '\n\n' + VERSION_INFO + '\n'
+COMMAND_DATA = CMD_DESCRIPTION + '\n\n' + VERSION_INFO + '\n'
 
 
 ui_:adsk.core.UserInterface = None
@@ -137,7 +137,7 @@ def run(context):
 		utils.clear_ui_items(ui_.commandDefinitions.itemById(ENABLE_CMD_ID), select_panel_controls.itemById(ENABLE_CMD_ID))
 
 		# Use a Command to get a transaction when renaming
-		enable_cmd_def_ = ui_.commandDefinitions.addCheckBoxDefinition(ENABLE_CMD_ID, 'Component Drag', TESTCMD, get_drag_enabled())
+		enable_cmd_def_ = ui_.commandDefinitions.addCheckBoxDefinition(ENABLE_CMD_ID, 'Component Drag', COMMAND_DATA, get_drag_enabled())
 		select_panel_controls.addCommand(enable_cmd_def_, FUSION_DRAG_ID, False) #Adding in the fresh control
 		enable_ctrl_def_ = enable_cmd_def_.controlDefinition
 
