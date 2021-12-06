@@ -104,6 +104,8 @@ def is_parametric_mode():
 			return bool(design and design.designType == adsk.fusion.DesignTypes.ParametricDesignType)
 	except: return False
 
+
+
 def AppObjects(): return GetApp(),GetUi()
 def GetApp(): return adsk.core.Application.cast(adsk.core.Application.get())
 def GetUi(): return GetApp().userInterface

@@ -30,17 +30,17 @@ The add-in can be temporarily disabled using the *Scripts and Add-ins* dialog. P
 
 ## Reporting Issues
 
-Please report any issues that you find on the [Issues](https://github.com/thomasa88/NoComponentDrag/issues) page.
+Please report any issues that you find on the [Issues](https://github.com/ZXYNINE/NoComponentDrag/issues) page.
 
 For better support, please include the steps you performed and the result. Also include copies of any error messages.
 
 ## Author
 
-This add-in is created by Thomas Axelsson.
+This add-in was originally created by [Thomas Axelsson](https://github.com/thomasa88), but is now maintained by by user [ZXYNINE](https://github.com/Zxynine) since v 1.0.2.
 
 ## Contributors
 
-"Insert -> Derive" Fix contributed by user [ZXYNINE](https://github.com/Zxynine), and adapted.
+"Insert -> Derive" Fix contributed by [ZXYNINE](https://github.com/Zxynine), and adapted.
 
 ## License
 
@@ -48,15 +48,20 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
 
 ## More Fusion 360™ Add-ins
 
-[My Fusion 360™ app store page](https://apps.autodesk.com/en/Publisher/PublisherHomepage?ID=JLH9M8296BET)
+[Thomas's Fusion 360™ app store page](https://apps.autodesk.com/en/Publisher/PublisherHomepage?ID=JLH9M8296BET)
 
-[All my add-ins on Github](https://github.com/topics/fusion-360?q=user%3Athomasa88)
+[All of Thomas's add-ins on Github](https://github.com/topics/fusion-360?q=user%3Athomasa88)
 
 ## Changelog
 
 * v 1.0.3
-  * Complete code rework by ZXYNINE
+  * Complete code rework.
   * Removal of old features that are no longer needed.
+  * Updated images and screenshots.
+  * Add-in now explicitly waits until the workspace is activated to check environment.
+---
+* Active matenence passed from [Thomas Axelsson](https://github.com/thomasa88) to [ZXYNINE](https://github.com/Zxynine)
+---
 * v 1.0.2
   * Fix for "Insert -> Derive" missing the insert panel. Issue #1. Credits to [ZXYNINE](https://github.com/Zxynine) for locating the bug and providing an initial fix.
   * Optimized synchronization of Direct Edit and Parametric mode drag options.
