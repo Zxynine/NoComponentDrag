@@ -97,7 +97,6 @@ class EventsManager:
 		def waiter():
 			time.sleep(secs)
 			self.app.fireCustomEvent(self.delayed_event_id, str(delay_id))
-
 		self.delayed_funcs[delay_id] = func
 
 		if secs > 0:
