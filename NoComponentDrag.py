@@ -54,13 +54,18 @@ fusion_drag_controls_def_ : adsk.core.CheckBoxControlDefinition = None
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This will fire at the start of fusion but not until the workspace is ready which fixes the other problem
+#This event removes itself on its first call to prevent useles events being queued
+def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
+	handler = events_manager_.find_handler_by_event(ui_.workspaceActivated)
+	if handler is not None: events_manager_.remove_handler((handler, ui_.workspaceActivated))
+	check_environment()
+
 
 def command_starting_handler(args: adsk.core.ApplicationCommandEventArgs):
 	# Should we block?
 	if parametric_environment_ and args.commandId == 'FusionDragComponentsCommand' and not get_drag_enabled():
 		args.isCanceled = True
-
-
 
 def command_terminated_handler(args: adsk.core.ApplicationCommandEventArgs):
 	# Detect if user toggles Direct Edit or enters/leaves a Base Feature
@@ -82,12 +87,6 @@ def enable_cmd_created_handler(args: adsk.core.CommandCreatedEventArgs):
 def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	check_environment()
 	
-# This will fire at the start of fusion but not until the workspace is ready which fixes the other problem
-#This event removes itself on its first call to prevent useles events being queued
-def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
-	handler = events_manager_.find_handler_by_event(ui_.workspaceActivated)
-	if handler is not None: events_manager_.remove_handler((handler, ui_.workspaceActivated))
-	check_environment()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Gets the value of Fusion's "Component Drag" checkbox
