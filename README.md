@@ -36,21 +36,17 @@ For better support, please include the steps you performed and the result. Also 
 
 ## Author
 
-This add-in was originally created by [Thomas Axelsson](https://github.com/thomasa88), but is now maintained by by user [ZXYNINE](https://github.com/Zxynine) since v 1.0.2.
+This add-in was originally created by [Thomas Axelsson](https://github.com/thomasa88).
+
+Now maintained by by user [ZXYNINE](https://github.com/Zxynine) as of v1.0.2.
 
 ## Contributors
-
-"Insert -> Derive" Fix contributed by [ZXYNINE](https://github.com/Zxynine), and adapted.
+* Original Add-in concept by [Thomas Axelsson](https://github.com/thomasa88).
+* "Insert -> Derive" Fix contributed by [ZXYNINE](https://github.com/Zxynine), and adapted.
 
 ## License
 
 This project is licensed under the terms of the MIT license. See [LICENSE](LICENSE).
-
-## More Fusion 360™ Add-ins
-
-[Thomas's Fusion 360™ app store page](https://apps.autodesk.com/en/Publisher/PublisherHomepage?ID=JLH9M8296BET)
-
-[All of Thomas's add-ins on Github](https://github.com/topics/fusion-360?q=user%3Athomasa88)
 
 ## Changelog
 
@@ -60,7 +56,7 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
   * Updated images and screenshots.
   * Add-in now explicitly waits until the workspace is activated to check environment.
 ---
-* Active matenence passed from [Thomas Axelsson](https://github.com/thomasa88) to [ZXYNINE](https://github.com/Zxynine)
+* Active maintenance passed from [Thomas Axelsson](https://github.com/thomasa88) to [ZXYNINE](https://github.com/Zxynine)
 ---
 * v 1.0.2
   * Fix for "Insert -> Derive" missing the insert panel. Issue #1. Credits to [ZXYNINE](https://github.com/Zxynine) for locating the bug and providing an initial fix.
@@ -81,3 +77,9 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
   * Remember *Component Drag* setting
 * v 0.10
   * *Component Drag* menu option
+---  
+## More Fusion 360™ Add-ins
+
+[Thomas's Fusion 360™ app store page](https://apps.autodesk.com/en/Publisher/PublisherHomepage?ID=JLH9M8296BET)
+
+[All of Thomas's add-ins on Github](https://github.com/topics/fusion-360?q=user%3Athomasa88)
