@@ -62,11 +62,12 @@ def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	check_environment()
 
 
-def command_starting_handler(args: adsk.core.ApplicationCommandEventArgs):
-	# Should we block?
+#This is fired whenever any command is starting up and checks if that command should be blocked
+def command_starting_handler(args: adsk.core.ApplicationCommandEventArgs):	# Should we block?
 	if parametric_environment_ and args.commandId == 'FusionDragComponentsCommand' and not get_drag_enabled():
 		args.isCanceled = True
 
+#This is fired any time the command gets disabled
 def command_terminated_handler(args: adsk.core.ApplicationCommandEventArgs):
 	# Detect if user toggles Direct Edit or enters/leaves a Base Feature
 	# Undo/Redo triggers the ActivateEnvironmentCommand instead.
@@ -76,6 +77,7 @@ def command_terminated_handler(args: adsk.core.ApplicationCommandEventArgs):
 							'BaseFeatureActivate', 'BaseFeatureStop', 'BaseFeatureCreationCommand'))):
 		check_environment()
 
+#This is fired when the checkbox changes value
 def enable_cmd_created_handler(args: adsk.core.CommandCreatedEventArgs):
 	global addin_updating_checkbox_
 	# Check if we are updating the checkbox programmatically, to avoid infinite event recursion
@@ -83,7 +85,7 @@ def enable_cmd_created_handler(args: adsk.core.CommandCreatedEventArgs):
 	checkbox_def: adsk.core.CheckBoxControlDefinition = args.command.parentCommandDefinition.controlDefinition
 	set_drag_enabled(checkbox_def.isChecked)
 
-
+#This is fired whenever the active document is switched
 def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	check_environment()
 	
