@@ -50,7 +50,7 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
 
 ## Changelog
 
-* v 1.0.3
+* v 1.0.3 (Pre-Release)
   * Complete code rework.
   * Removal of old features that are no longer needed.
   * Updated images and screenshots.
