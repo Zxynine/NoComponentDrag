@@ -115,15 +115,13 @@ def custom_msgbox(text, caption, dlg_type, label_map={}):
 
     main_window = user32.GetActiveWindow()
     ret = user32.MessageBoxW(main_window, text, caption, dlg_type)
-    if hook_handle:
-        user32.UnhookWindowsHookEx(hook_handle)
+    if hook_handle: user32.UnhookWindowsHookEx(hook_handle)
     
     return ret
 
 def _create_hook(label_map):
     def hook(n_code, w_param, l_param):
-        if n_code < 0:
-            return user32.CallNextHookEx(None, n_code, w_param, l_param)
+        if n_code < 0: return user32.CallNextHookEx(None, n_code, w_param, l_param)
         try:        
             msg = ctypes.cast(l_param, LPCWPRETSTRUCT)[0]
             if msg.message == WM_INITDIALOG:
@@ -133,16 +131,13 @@ def _create_hook(label_map):
                 if class_name == '#32770':
                     for ctl_id, label in label_map.items():
                         _set_dialog_ctl_text(msg.hwnd, ctl_id, label)
-        except Exception as e:
-            print(r"{NAME} Hook error:", e)
-        finally:
-            return user32.CallNextHookEx(None, n_code, w_param, l_param)
+        except Exception as e: print(r"{NAME} Hook error:", e)
+        finally: return user32.CallNextHookEx(None, n_code, w_param, l_param)
     return hook
 
 def _set_dialog_ctl_text(parent_hwnd, control_id, text):
     ctl_hwnd = user32.GetDlgItem(parent_hwnd, control_id)
     if ctl_hwnd:
-        user32.SetWindowTextW.argtypes = (ctypes.wintypes.HWND,
-                                            ctypes.wintypes.LPCWSTR)
+        user32.SetWindowTextW.argtypes = (ctypes.wintypes.HWND, ctypes.wintypes.LPCWSTR)
         user32.SetWindowTextW.restype = ctypes.wintypes.BOOL
         user32.SetWindowTextW(ctl_hwnd, text)
