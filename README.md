@@ -41,12 +41,12 @@ For better support, please include the steps you performed and the result. Also 
 
 ## Author
 
-This add-in was originally created by [Thomas Axelsson](https://github.com/thomasa88).
+This add-in was originally created by Thomas Axelsson.
 
 Now maintained by by user [ZXYNINE](https://github.com/Zxynine) as of v1.0.2.
 
 ## Contributors
-* Original Add-in concept by [Thomas Axelsson](https://github.com/thomasa88).
+* Original Add-in concept by Thomas Axelsson.
 * "Insert -> Derive" Fix contributed by [ZXYNINE](https://github.com/Zxynine), and adapted.
 
 ## License
@@ -61,7 +61,7 @@ This project is licensed under the terms of the MIT license. See [LICENSE](LICEN
   * Updated images and screenshots.
   * Add-in now explicitly waits until the workspace is activated to check environment.
 ---
-* Active maintenance passed from [Thomas Axelsson](https://github.com/thomasa88) to [ZXYNINE](https://github.com/Zxynine)
+* Active maintenance passed from Thomas Axelsson to [ZXYNINE](https://github.com/Zxynine)
 ---
 * v 1.0.2
   * Fix for "Insert -> Derive" missing the insert panel. Issue #1. Credits to [ZXYNINE](https://github.com/Zxynine) for locating the bug and providing an initial fix.
