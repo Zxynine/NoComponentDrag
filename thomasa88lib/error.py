@@ -35,6 +35,11 @@ class ErrorCatcher():
 		self.msgbox_in_debug = msgbox_in_debug
 		self.msg_prefix = msg_prefix
 
+	def __call__(self, func):
+		def catcher(func_self, *args):
+			with self: func(*args)
+		return catcher
+		
 	def __enter__(self): self.caller_file = utils.get_caller_path()
 
 	def __exit__(self, exctype, value, traceb):
@@ -54,8 +59,7 @@ class ErrorCatcher():
 					'Describe what you did to get this error or record a video.\n\n' +
 					'-' * 50 + '\n\n' +
 					f'Fusion 360 v. {app.version} - OS:{platform.system()}\n' +
-					f'{caller} failed: \n\n' +
-					tb_str)
+					f'{caller} failed: \n\n' + tb_str)
 		print(message)
 
 		in_debugger = hasattr(sys, 'gettrace') and sys.gettrace()

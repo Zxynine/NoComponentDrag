@@ -36,11 +36,11 @@ utils.ReImport_List(events, manifest, error, utils)
 NAME = 'NoComponentDrag'
 VERSION = str(manifest.read()["version"])
 FILE_DIR = os.path.dirname(os.path.realpath(__file__))
-ENABLE_CMD_ID = 'thomasa88_NoComponentDrag_Enable'
 VERSION_INFO = f'({NAME} v {VERSION})'
 CMD_DESCRIPTION = 'Enables or disables the movement of components by dragging in the canvas.'
 COMMAND_DATA = CMD_DESCRIPTION + '\n\n' + VERSION_INFO + '\n'
 
+ENABLE_CMD_ID = 'thomasa88_NoComponentDrag_Enable'
 FUSION_CMD_ID = 'FusionDragComponentsCommand'
 FUSION_CTRL_ID = 'FusionDragCompControlsCmd'
 
@@ -80,7 +80,6 @@ def command_terminated_handler(args: adsk.core.ApplicationCommandEventArgs):
 
 #This is fired when the checkbox changes value
 def enable_cmd_created_handler(args: adsk.core.CommandCreatedEventArgs):
-	global addin_updating_checkbox_
 	# Check if we are updating the checkbox programmatically, to avoid infinite event recursion
 	if addin_updating_checkbox_: return
 	checkbox_def: adsk.core.CheckBoxControlDefinition = args.command.parentCommandDefinition.controlDefinition
@@ -89,7 +88,7 @@ def enable_cmd_created_handler(args: adsk.core.CommandCreatedEventArgs):
 #This is fired whenever the active document is switched
 def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	check_environment()
-	
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Gets the value of Fusion's "Component Drag" checkbox
 def get_drag_enabled(): return fusion_drag_controls_def_.isChecked	
@@ -140,15 +139,14 @@ def run(context):
 
 		#Adds all needed handlers to the event manager
 		events_manager_.add_handler(enable_cmd_def_.commandCreated, callback=enable_cmd_created_handler)
-		events_manager_.add_handler(ui_.commandStarting, callback=command_starting_handler)
-		events_manager_.add_handler(ui_.commandTerminated, callback=command_terminated_handler)
-		events_manager_.add_handler(app_.documentActivated, callback=document_activated_handler)
+		events_manager_.add_handler(ui_.commandStarting, 			callback=command_starting_handler)
+		events_manager_.add_handler(ui_.commandTerminated, 			callback=command_terminated_handler)
+		events_manager_.add_handler(app_.documentActivated, 		callback=document_activated_handler)
 		
 		# Workspace is not ready when starting (?)
 		# Create a workspace activated handler to wait untill it is ready.
 		if not bool(context['IsApplicationStartup']): check_environment()
 		else: events_manager_.add_handler(ui_.workspaceActivated, callback=workspace_activated_handler)
-
 
 def stop(context):
 	with error_catcher_: events_manager_.clean_up(select_panel_controls.itemById(ENABLE_CMD_ID))
