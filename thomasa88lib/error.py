@@ -5,7 +5,7 @@
 
 import adsk.core
 import traceback, getpass
-import os, re, sys
+import os, re, sys, platform
 # Avoid Fusion namespace pollution
 from . import utils
 
@@ -53,7 +53,7 @@ class ErrorCatcher():
 					'Copy this message by taking a screenshot. ' +
 					'Describe what you did to get this error or record a video.\n\n' +
 					'-' * 50 + '\n\n' +
-					f'Fusion 360 v. {app.version}\n' +
+					f'Fusion 360 v. {app.version} - OS:{platform.system()}\n' +
 					f'{caller} failed: \n\n' +
 					tb_str)
 		print(message)
