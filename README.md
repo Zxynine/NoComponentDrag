@@ -28,6 +28,11 @@ The add-in can be temporarily disabled using the *Scripts and Add-ins* dialog. P
 * Disabling component drag does not allow for starting window selections on top of components, which is the case for the built-in *Component Drag* option.
 * Holding the *Alt* key does not temporarily enable component dragging.
 
+## Planned Features
+
+* Option for dragging selected components
+* *Alt* key toggles component dragging
+
 ## Reporting Issues
 
 Please report any issues that you find on the [Issues](https://github.com/ZXYNINE/NoComponentDrag/issues) page.

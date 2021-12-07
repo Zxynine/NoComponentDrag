@@ -41,6 +41,8 @@ VERSION_INFO = f'({NAME} v {VERSION})'
 CMD_DESCRIPTION = 'Enables or disables the movement of components by dragging in the canvas.'
 COMMAND_DATA = CMD_DESCRIPTION + '\n\n' + VERSION_INFO + '\n'
 
+FUSION_CMD_ID = 'FusionDragComponentsCommand'
+FUSION_CTRL_ID = 'FusionDragCompControlsCmd'
 
 ui_:adsk.core.UserInterface = None
 app_:adsk.core.Application = None 
@@ -57,14 +59,13 @@ fusion_drag_controls_def_ : adsk.core.CheckBoxControlDefinition = None
 # This will fire at the start of fusion but not until the workspace is ready which fixes the other problem
 #This event removes itself on its first call to prevent useles events being queued
 def workspace_activated_handler(args: adsk.core.WorkspaceEventArgs):
-	handler = events_manager_.find_handler_by_event(ui_.workspaceActivated)
-	if handler is not None: events_manager_.remove_handler((handler, ui_.workspaceActivated))
+	events_manager_.remove_handler_by_event(ui_.workspaceActivated)
 	check_environment()
 
 
 #This is fired whenever any command is starting up and checks if that command should be blocked
 def command_starting_handler(args: adsk.core.ApplicationCommandEventArgs):	# Should we block?
-	if parametric_environment_ and args.commandId == 'FusionDragComponentsCommand' and not get_drag_enabled():
+	if parametric_environment_ and args.commandId == FUSION_CMD_ID and not get_drag_enabled():
 		args.isCanceled = True
 
 #This is fired any time the command gets disabled
@@ -90,27 +91,10 @@ def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
 	check_environment()
 	
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 # Gets the value of Fusion's "Component Drag" checkbox
 def get_drag_enabled(): return fusion_drag_controls_def_.isChecked	
 #Sets the Fusion's "Component Drag" checkbox to the given value
 def set_drag_enabled(value:bool): fusion_drag_controls_def_.isChecked = value
-
-
-def check_environment():
-	global enable_ctrl_def_, parametric_environment_
-	# Checking workspace type in DocumentActivated handler fails since Fusion 360 v2.0.10032
-	# UserInterface.ActiveWorkspace throws when it is called from DocumentActivatedHandler
-	# during Fusion 360 start-up(?). Checking for app_.isStartupComplete does not help.
-	is_parametric = bool(utils.is_parametric_mode())
-	if parametric_environment_ == is_parametric: return # Environment did not change
-	# Hide/show our menu command to avoid showing to Component Drag menu items in direct edit mode (Our command + Fusion's command).
-	enable_ctrl_def_.isVisible = parametric_environment_ = is_parametric
-
-	# We only need to update checkbox in parametric mode, as it will not be seen in direct edit mode.
-	# Fusion crashes if we change isChecked from (one of?) the event handlers, so we put the update at the end of the event queue.
-	if is_parametric and enable_ctrl_def_.isChecked != get_drag_enabled():
-		events_manager_.delay(update_checkbox)
 
 def update_checkbox():
 	# Only set the checkbox value (triggering a command creation), if the
@@ -122,16 +106,27 @@ def update_checkbox():
 		enable_ctrl_def_.isChecked = direct_edit_drag_
 		addin_updating_checkbox_ = False
 
+def check_environment():
+	global enable_ctrl_def_, parametric_environment_
+	# Checking workspace type in DocumentActivated handler fails since Fusion 360 v2.0.10032
+	# UserInterface.ActiveWorkspace throws when it is called from DocumentActivatedHandler
+	# during Fusion 360 start-up(?). Checking for app_.isStartupComplete does not help.
+	is_parametric = bool(utils.is_parametric_mode())
+	if parametric_environment_ == is_parametric: return # Environment did not change
+	# Hide/show our menu command to avoid showing to Component Drag menu items in direct edit mode (Our command + Fusion's command).
+	enable_ctrl_def_.isVisible = parametric_environment_ = is_parametric
+	# We only need to update checkbox in parametric mode, as it will not be seen in direct edit mode.
+	# Fusion crashes if we change isChecked from (one of?) the event handlers, so we put the update at the end of the event queue.
+	if is_parametric and enable_ctrl_def_.isChecked != get_drag_enabled():
+		events_manager_.delay(update_checkbox)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 def run(context):
 	#Expose global variables inside of function
-	global app_, ui_, enable_ctrl_def_, select_panel_controls, fusion_drag_controls_def_, events_manager_
-	FUSION_DRAG_ID = 'FusionDragCompControlsCmd'
+	global app_, ui_, enable_ctrl_def_, select_panel_controls, fusion_drag_controls_def_
 	with error_catcher_:
 		app_, ui_ = utils.AppObjects()
-		fusion_drag_controls_def_ = ui_.commandDefinitions.itemById(FUSION_DRAG_ID).controlDefinition
+		fusion_drag_controls_def_ = ui_.commandDefinitions.itemById(FUSION_CTRL_ID).controlDefinition
 		# There are multiple select panels. Pick the right one
 		select_panel_controls = ui_.toolbarPanelsByProductType('DesignProductType').itemById('SelectPanel').controls
 
@@ -140,7 +135,7 @@ def run(context):
 
 		# Use a Command to get a transaction when renaming
 		enable_cmd_def_ = ui_.commandDefinitions.addCheckBoxDefinition(ENABLE_CMD_ID, 'Component Drag', COMMAND_DATA, get_drag_enabled())
-		select_panel_controls.addCommand(enable_cmd_def_, FUSION_DRAG_ID, False) #Adding in the fresh control
+		select_panel_controls.addCommand(enable_cmd_def_, FUSION_CTRL_ID, False) #Adding in the fresh control
 		enable_ctrl_def_ = enable_cmd_def_.controlDefinition
 
 		#Adds all needed handlers to the event manager
@@ -150,14 +145,13 @@ def run(context):
 		events_manager_.add_handler(app_.documentActivated, callback=document_activated_handler)
 		
 		# Workspace is not ready when starting (?)
-		if not bool(context['IsApplicationStartup']): check_environment()
 		# Create a workspace activated handler to wait untill it is ready.
+		if not bool(context['IsApplicationStartup']): check_environment()
 		else: events_manager_.add_handler(ui_.workspaceActivated, callback=workspace_activated_handler)
 
 
 def stop(context):
-	with error_catcher_:
-		events_manager_.clean_up(select_panel_controls.itemById(ENABLE_CMD_ID))
+	with error_catcher_: events_manager_.clean_up(select_panel_controls.itemById(ENABLE_CMD_ID))
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

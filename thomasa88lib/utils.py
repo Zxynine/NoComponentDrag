@@ -23,7 +23,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import adsk.core, adsk.fusion, adsk.cam, traceback
+import adsk.core, adsk.fusion, adsk.cam
 
 import inspect
 import os, re
@@ -105,6 +105,8 @@ def is_parametric_mode():
 	except: return False
 
 
+#This is a context manager that just ignores what happens
+class Ignore:__enter__=lambda cls:cls;__exit__=lambda *args:True
 
 def AppObjects(): return GetApp(),GetUi()
 def GetApp(): return adsk.core.Application.cast(adsk.core.Application.get())
