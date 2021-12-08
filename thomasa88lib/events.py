@@ -78,11 +78,11 @@ class EventsManager:
 	def register_event(self, name):
 		# Clears and then starts the event (makes sure there is not an old event registered due to a bad stop)
 		self.app.unregisterCustomEvent(name)
-		event = self.app.registerCustomEvent(name)
+		event:adsk.core.Event = self.app.registerCustomEvent(name)
 		if event: self.custom_event_names.append(name)
 		return event
 
-	def find_handler_by_event(self, findevent):
+	def find_handler_by_event(self, findevent:adsk.core.Event):
 		eventName = findevent.name
 		for handler, event in self.handlers:
 			if eventName == event.name: 
