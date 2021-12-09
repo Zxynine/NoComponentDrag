@@ -11,7 +11,7 @@ A Fusion 360 add-in that adds a *Component Drag* option in the parametric design
 
 ## Installation
 
-Download the add-in from the [Releases](https://github.com/thomasa88/NoComponentDrag/releases) page.
+Download the add-in from the [Releases](https://github.com/zxynine/NoComponentDrag/releases) page.
 
 Unpack it into `API\AddIns` (see [How to install an add-in or script in Fusion 360](https://knowledge.autodesk.com/support/fusion-360/troubleshooting/caas/sfdcarticles/sfdcarticles/How-to-install-an-ADD-IN-and-Script-in-Fusion-360.html)).
 
