@@ -81,9 +81,7 @@ def command_terminated_handler(args: adsk.core.ApplicationCommandEventArgs):
 #This is fired when the checkbox changes value
 def enable_cmd_created_handler(args: adsk.core.CommandCreatedEventArgs):
 	# Check if we are updating the checkbox programmatically, to avoid infinite event recursion
-	if addin_updating_checkbox_: return
-	checkbox_def: adsk.core.CheckBoxControlDefinition = args.command.parentCommandDefinition.controlDefinition
-	set_drag_enabled(checkbox_def.isChecked)
+	if not addin_updating_checkbox_: set_drag_enabled(enable_ctrl_def_.isChecked)
 
 #This is fired whenever the active document is switched
 def document_activated_handler(args: adsk.core.WorkspaceEventArgs):
@@ -131,7 +129,7 @@ def run(context):
 
 		# Clearing any previous enable_cmd_def  # Removing the old control
 		utils.clear_ui_items(ui_.commandDefinitions.itemById(ENABLE_CMD_ID), select_panel_controls.itemById(ENABLE_CMD_ID))
-
+		
 		# Use a Command to get a transaction when renaming
 		enable_cmd_def_ = ui_.commandDefinitions.addCheckBoxDefinition(ENABLE_CMD_ID, 'Component Drag', COMMAND_DATA, get_drag_enabled())
 		select_panel_controls.addCommand(enable_cmd_def_, FUSION_CTRL_ID, False) #Adding in the fresh control
